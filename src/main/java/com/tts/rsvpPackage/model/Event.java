@@ -3,14 +3,17 @@ package com.tts.rsvpPackage.model;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
@@ -27,8 +30,16 @@ public class Event {
 	private String name;
 	private String location;
 	private Float cost;
+	@JsonFormat(pattern="yyyy-MM-dd")
 	private Date date;
-		
+	
+	Long reservationRef;
+	String reservationStatus;
+	
+	@OneToMany(mappedBy="event", cascade = CascadeType.ALL)
+	Set<Reservation> reservations;
+	
+
 	public Event() {}
 
 	public Event(String name, String location, Float cost, Date date) {
@@ -37,15 +48,39 @@ public class Event {
 		this.cost = cost;
 		this.date = date;
 	}
-
+	
+	public Long getReservationRef() {
+		return reservationRef;
+	}
+	
+	public void setReservationRef(Long reservationRef) {
+		this.reservationRef = reservationRef;
+	}
+	
+	public String getReservationStatus() {
+		return reservationStatus;
+	}
+	
 	public Set<User> getUsers() {
-		return users;
+		
+		return reservations.stream().map(res->{	
+			res.user.setReservations(new HashSet<>());
+			res.user.setReservationRef(res.id);
+			res.user.setReservationStatus(res.status);
+			return res.user;
+		}).collect(Collectors.toSet());
+
 	}
 	
-	public void setUsers(Set<User> users) {
-		this.users = users;
+	public void setReservationStatus(String reservationStatus) {
+		this.reservationStatus = reservationStatus;
 	}
 	
+	
+	public void setReservations(Set<Reservation> reservations) {
+		this.reservations = reservations;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -81,24 +116,13 @@ public class Event {
 	public Long getId() {
 		return id;
 	}
-	
-	public void addUser(User user) {
-		this.users.add(user);
-		user.getEvents().add(this);
-	}
-	
-	public void removeUser(User user) {
-		this.users.remove(user);
-		user.getEvents().remove(this);
-	}
 
 	@Override
 	public String toString() {
 		return "Event [name=" + name + ", location=" + location + ", cost=" + cost + ", date=" + date + "]";
 	}
 	
-	@ManyToMany(mappedBy="events")
-	private Set<User> users = new HashSet<>();
+
 	
 	
 	
