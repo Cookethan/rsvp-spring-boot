@@ -4,7 +4,7 @@ pipeline{
     stage('Test'){
     agent{ label 'master' }
       steps{
-        sh 'echo "Hello Jenkins"'
+        sh 'mvn test'
       }
     }
   }
