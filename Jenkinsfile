@@ -7,7 +7,7 @@ pipeline{
     stage('Test'){
     agent{ label 'master' }
       steps{
-        sh 'mvn test'
+        sh 'mvn -v'
       }
     }
   }
