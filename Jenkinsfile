@@ -4,10 +4,16 @@ pipeline{
     maven 'default'
   }
   stages{
-    stage('Test'){
+    stage('Integration Test'){
     agent{ label 'master' }
       steps{
-        sh 'mvn -v'
+        sh "mvn '-Dtest=*/rsvp/*' test"
+      }
+    }
+    tage('Cucumber Test'){
+    agent{ label 'master' }
+      steps{
+        sh "mvn '-Dtest=*/RunCucumberTest.java' test"
       }
     }
   }
