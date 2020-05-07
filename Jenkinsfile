@@ -10,7 +10,7 @@ pipeline{
         sh "mvn '-Dtest=*/rsvp/*' test"
       }
     }
-    tage('Cucumber Test'){
+    stage('Cucumber Test'){
     agent{ label 'master' }
       steps{
         sh "mvn '-Dtest=*/RunCucumberTest.java' test"
